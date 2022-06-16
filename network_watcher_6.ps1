@@ -1,4 +1,4 @@
-﻿#v1.3
+﻿$version = "1.3";
 $cont_var = Get-Content C:\Users\Public\conf.txt
 
 $db_usr = $cont_var[0];
@@ -49,7 +49,7 @@ Function Get-Actions{
         $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
         if($iNumberOfDataSets -le 0){
             $env:computername | Select-Object
-            $Query = "INSERT INTO devices VALUES (null, '" +  $env:computername + "', '" + $serialnumber + "', '1');";
+            $Query = "INSERT INTO devices VALUES (null, '" +  $env:computername + "', '" + $serialnumber + "','" + $version + "', '1');";
             $Command = New-Object MySql.Data.MySqlClient.MySqlCommand($Query, $Connection)
             $DataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($Command)
             $DataSet = New-Object System.Data.DataSet
@@ -69,6 +69,12 @@ Function Get-Actions{
             foreach($oDataSet in $oMYSQLDataSet.tables[0])
             {
                 $id_device = $oDataSet.iddevices;
+                $Query = "UPDATE devices SET ``version`` = '" + $version + "' WHERE iddevices = " + $id_device + ";";
+                $Command = New-Object MySql.Data.MySqlClient.MySqlCommand($Query, $Connection)
+                $DataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($Command)
+                $DataSet = New-Object System.Data.DataSet
+                $RecordCount = $dataAdapter.Fill($dataSet, "data")
+                $DataSet.Tables[0]
             }
         }
         $Query_dv = "SELECT * FROM actions WHERE idDevice = " + $id_device + " AND status = 0;"
