@@ -53,7 +53,7 @@ $update = Get-Updates-Status
 $env:computername | Select-Object
 $ipv4 = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.AddressState -eq "Preferred" -and $_.ValidLifetime -lt "24:00:00"}).IPAddress
 $date = Get-Date -Format("yyyy-MM-dd HH:mm:ss")
-$serialnumber = Get-WmiObject win32_bios | select SerialNumber
+$serialnumber = Get-WmiObject win32_bios | Select-Object SerialNumber
 $serialnumber = $serialnumber.SerialNumber
 
 $Query = 'INSERT INTO events VALUES (NULL,"' + $serialnumber + '","' + $ipv4 + '", "' + $env:computername + '", "' + $res + '", "' + $date + '","' + $thinscale + '")'
@@ -82,10 +82,10 @@ if($cnt -eq 0 -or -not $start_date -eq (Get-Date -Format("yyyy-MM-dd"))){
 $cnt ++
 
 try{
-del C:\Users\Public\cnf.cfg
+    Remove-Item C:\Users\Public\cnf.cfg
 }catch{}
 try{
-del C:\Users\Public\browsing.txt
+    Remove-Item C:\Users\Public\browsing.txt
 }catch{}
 New-Item C:\Users\Public\cnf.cfg
 $start_date = Get-Date -Format("dd-MM-yyyy HH:mm:ss")
