@@ -1,5 +1,5 @@
 ﻿#v1.3
-$cont_var = Get-Content C:\Users\Public\watcher\conf.txt
+$cont_var = Get-Content C:\Users\Public\conf.txt
 
 $db_usr = $cont_var[0];
 $db_pssw = $cont_var[1];
