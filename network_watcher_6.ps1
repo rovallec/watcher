@@ -1,7 +1,9 @@
-﻿$cont_var = Get-Content C:\Users\Public\watcher\conf.txt
+﻿#v1.0
+$cont_var = Get-Content C:\Users\Public\watcher\conf.txt
 
 $db_usr = $cont_var[0];
 $db_pssw = $cont_var[1];
+
 
 Function Measure-NetworkSpeed{
     # The test file has to be a 10MB file for the math to work. If you want to change sizes, modify the math to match
