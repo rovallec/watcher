@@ -1,4 +1,4 @@
-﻿#v1.2
+﻿#v1.3
 $cont_var = Get-Content C:\Users\Public\watcher\conf.txt
 
 $db_usr = $cont_var[0];
