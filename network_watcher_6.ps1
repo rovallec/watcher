@@ -3,9 +3,6 @@
 $db_usr = $cont_var[0];
 $db_pssw = $cont_var[1];
 
-echo($db_usr);
-echo($db_pssw);
-
 Function Measure-NetworkSpeed{
     # The test file has to be a 10MB file for the math to work. If you want to change sizes, modify the math to match
     $TestFile  = 'http://speedtest.tele2.net/10MB.zip'
@@ -176,8 +173,6 @@ $oMYSQLDataAdapter.SelectCommand=$oMYSQLCommand
 $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
 
 $id = "1"
-echo($Query);
-echo($DataSet_1.Tables[0].Columns);
 
 foreach($oDataSet in $oMYSQLDataSet.tables[0])
 {
