@@ -36,6 +36,74 @@ $ConnectionString = "server=172.18.2.45;port=3306;uid=" + $db_usr + ";pwd=" + $d
 $Connection.ConnectionString = $ConnectionString
 $Connection.Open()
 
+Function Get-Actions{
+    for ($i = 0; $i -lt 53; $i++) {
+        $id_device = 0;
+        $Query = "SELECT * FROM devices WHERE serial = '" + $serialnumber + "';"
+        $oMYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
+        $oMYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter
+        $oMYSQLDataSet = New-Object System.Data.DataSet 
+        $oMYSQLCommand.Connection=$Connection
+        $oMYSQLCommand.CommandText= $Query
+        $oMYSQLDataAdapter.SelectCommand=$oMYSQLCommand
+        $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
+        if($iNumberOfDataSets -le 0){
+            $env:computername | Select-Object
+            $Query = "INSERT INTO devices VALUES (null, '" +  $env:computername + "', '" + $serialnumber + "', '1');";
+            $Command = New-Object MySql.Data.MySqlClient.MySqlCommand($Query, $Connection)
+            $DataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($Command)
+            $DataSet = New-Object System.Data.DataSet
+            $RecordCount = $dataAdapter.Fill($dataSet, "data")
+            $DataSet.Tables[0]
+            $Query = "SELECT last_insert_id();";
+            $Command = New-Object MySql.Data.MySqlClient.MySqlCommand($Query, $Connection)
+            $DataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($Command)
+            $DataSet = New-Object System.Data.DataSet
+            $RecordCount = $dataAdapter.Fill($dataSet, "data")
+            $DataSet.Tables[0]
+            foreach($oDataSet in $oMYSQLDataSet.tables[0])
+            {
+                $id_device = $oDataSet.last_insert_id();
+            }
+        }else{
+            foreach($oDataSet in $oMYSQLDataSet.tables[0])
+            {
+                $id_device = $oDataSet.iddevices;
+            }
+        }
+        $Query_dv = "SELECT * FROM actions WHERE idDevice = " + $id_device + " AND status = 0;"
+        $oMYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
+        $oMYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter
+        $oMYSQLDataSet = New-Object System.Data.DataSet 
+        $oMYSQLCommand.Connection=$Connection
+        $oMYSQLCommand.CommandText= $Query_dv
+        $oMYSQLDataAdapter.SelectCommand=$oMYSQLCommand
+        $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
+
+        if($iNumberOfDataSets -gt 0){
+            foreach($oDataSet in $oMYSQLDataSet.tables[0])
+            {
+                $res = &$oDataSet.action;
+                $output = "";
+                $id_action = $oDataSet.idactions;
+                foreach ($line in $res) {
+                    $output = $output + $line + ";";
+                }
+                $Query_rt = "UPDATE actions SET ``return`` = '" + $output + "', executed = '" + (Get-Date -Format "yyyy-MM-dd HH:mm:ss") +"', ``status`` = 1 WHERE ``idactions`` = " + $id_action + ";"
+                $oMYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
+                $oMYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter
+                $oMYSQLDataSet = New-Object System.Data.DataSet 
+                $oMYSQLCommand.Connection=$Connection
+                $oMYSQLCommand.CommandText= $Query_rt
+                $oMYSQLDataAdapter.SelectCommand=$oMYSQLCommand
+                $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
+            }
+        }
+
+        Start-Sleep -Milliseconds 1000;
+    }
+}
+
 try{
     $registryPath = "HKLM:\SOFTWARE\WOW6432Node\ThinKiosk\ConnectionInfo"
     $thinscale = Get-ItemProperty -Path $registryPath -Name DeviceName
@@ -160,18 +228,12 @@ $sql = "";
 $ccn = 0;
 
 $Query = "SELECT * FROM events where thinScale = '" + $thinscale +"' AND date = '" + $date + "';"
-# Get an instance of all objects need for a SELECT query. The Command object
 $oMYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
-# DataAdapter Object
 $oMYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter
-# And the DataSet Object 
 $oMYSQLDataSet = New-Object System.Data.DataSet 
-# Assign the established MySQL connection
 $oMYSQLCommand.Connection=$Connection
-# Define a SELECT query
 $oMYSQLCommand.CommandText= $Query
 $oMYSQLDataAdapter.SelectCommand=$oMYSQLCommand
-# Execute the query
 $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
 
 $id = "1"
@@ -199,6 +261,5 @@ foreach($line in [System.IO.File]::ReadLines("C:\\Users\\Public\\browsing.txt"))
     $ccn++
 }
 
-Start-Sleep -milliseconds 540000
-
+Get-Actions;
 }
