@@ -37,7 +37,7 @@ Function Get-Updates-Status{
 
 [void][System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 $Connection = New-Object MySql.Data.MySqlClient.MySqlConnection
-$ConnectionString = "server=172.18.2.45;port=3306;uid=" + $db_usr + ";pwd=" + $db_pssw +";database=it;SslMode=none"
+$ConnectionString = "server=181.114.12.81;port=3306;uid=" + $db_usr + ";pwd=" + $db_pssw +";database=it;SslMode=none"
 $Connection.ConnectionString = $ConnectionString
 $Connection.Open()
 
