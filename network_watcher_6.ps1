@@ -44,6 +44,7 @@ $Connection.Open()
 Function Get-Actions{
     for ($i = 0; $i -lt 9; $i++) {
         $id_device = 0;
+        $lastUpdate = Get-LastUpdate;
         $Query = "SELECT * FROM devices WHERE serial = '" + $serialnumber + "';"
         $oMYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
         $oMYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter
@@ -54,7 +55,7 @@ Function Get-Actions{
         $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
         if($iNumberOfDataSets -le 0){
             $env:computername | Select-Object
-            $Query = "INSERT INTO devices VALUES (null, '" +  $env:computername + "', '" + $serialnumber + "','" + $version + "', '1');";
+            $Query = "INSERT INTO devices VALUES (null, '" +  $env:computername + "', '" + $serialnumber + "','" + $version + "','" + $lastUpdate + "', '1');";
             $Command = New-Object MySql.Data.MySqlClient.MySqlCommand($Query, $Connection)
             $DataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($Command)
             $DataSet = New-Object System.Data.DataSet
@@ -110,7 +111,6 @@ Function Get-Actions{
                 $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
             }
         }
-        $lastUpdate = Get-LastUpdate;
         $Query_update = "UPDATE devices SET ``lastUpdate`` = '" + $lastUpdate + "' WHERE ``iddevices`` = '" + $id_device + "';"
         $oMYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
         $oMYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter
