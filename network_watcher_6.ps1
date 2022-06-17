@@ -1,9 +1,14 @@
-﻿$version = "1.3";
+﻿$version = "1.3.1";
 $cont_var = Get-Content C:\Users\Public\conf.txt
 
 $db_usr = $cont_var[0];
 $db_pssw = $cont_var[1];
 
+Function Get-LastUpdate(){
+    $lastModify = Get-Item "C:\Users\Public\watcher\network_watcher_6.ps1";
+    $dt = Get-Date ($lastModify.LastWriteTime) -Format "yyyy-MM-dd HH:mm:ss";
+    return $dt;
+}
 
 Function Measure-NetworkSpeed{
     # The test file has to be a 10MB file for the math to work. If you want to change sizes, modify the math to match
@@ -32,7 +37,7 @@ Function Get-Updates-Status{
 
 [void][System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 $Connection = New-Object MySql.Data.MySqlClient.MySqlConnection
-$ConnectionString = "server=181.114.12.81;port=3306;uid=" + $db_usr + ";pwd=" + $db_pssw +";database=it;SslMode=none"
+$ConnectionString = "server=172.18.2.45;port=3306;uid=" + $db_usr + ";pwd=" + $db_pssw +";database=it;SslMode=none"
 $Connection.ConnectionString = $ConnectionString
 $Connection.Open()
 
@@ -105,6 +110,15 @@ Function Get-Actions{
                 $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
             }
         }
+        $lastUpdate = Get-LastUpdate;
+        $Query_update = "UPDATE devices SET ``lastUpdate`` = '" + $lastUpdate + "' WHERE ``iddevices`` = '" + $id_device + "';"
+        $oMYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
+        $oMYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter
+        $oMYSQLDataSet = New-Object System.Data.DataSet 
+        $oMYSQLCommand.Connection=$Connection
+        $oMYSQLCommand.CommandText= $Query_update
+        $oMYSQLDataAdapter.SelectCommand=$oMYSQLCommand
+        $iNumberOfDataSets=$oMYSQLDataAdapter.Fill($oMYSQLDataSet, "data")
 
         Start-Sleep -Milliseconds 60000;
     }
