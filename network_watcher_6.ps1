@@ -1,4 +1,4 @@
-﻿$version = "1.3.1";
+﻿$version = "1.3.2";
 $cont_var = Get-Content C:\Users\Public\conf.txt
 
 $db_usr = $cont_var[0];
