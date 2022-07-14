@@ -75,7 +75,7 @@ Function Get-Actions{
             foreach($oDataSet in $oMYSQLDataSet.tables[0])
             {
                 $id_device = $oDataSet.iddevices;
-                $Query = "UPDATE devices SET ``version`` = '" + $version + "', " + " ``hostname`` = " + $env:computername + " WHERE iddevices = " + $id_device + ";";
+                $Query = "UPDATE devices SET ``version`` = '" + $version + "', " + " ``hostname`` = '" + $env:computername + "' WHERE iddevices = " + $id_device + ";";
                 $Command = New-Object MySql.Data.MySqlClient.MySqlCommand($Query, $Connection)
                 $DataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($Command)
                 $DataSet = New-Object System.Data.DataSet
