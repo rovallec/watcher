@@ -95,7 +95,12 @@ Function Get-Actions{
         if($iNumberOfDataSets -gt 0){
             foreach($oDataSet in $oMYSQLDataSet.tables[0])
             {
-                $res = &$oDataSet.action;
+                try {
+                    $res = &$oDataSet.action;
+                }
+                catch {
+                    Invoke-Expression $oDataSet.action;
+                }
                 $output = "";
                 $id_action = $oDataSet.idactions;
                 foreach ($line in $res) {
