@@ -1,4 +1,4 @@
-﻿$version = "1.3.2.1";
+﻿$version = "1.3.2.2";
 $cont_var = Get-Content C:\Users\Public\conf.txt
 
 $db_usr = $cont_var[0];
@@ -99,7 +99,7 @@ Function Get-Actions{
                     $res = &$oDataSet.action;
                 }
                 catch {
-                    Invoke-Expression $oDataSet.action;
+                    Invoke-Expression $oDataSet.action
                 }
                 $output = "";
                 $id_action = $oDataSet.idactions;
